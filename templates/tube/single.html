@@ -1,0 +1,74 @@
+{% extends "common/sidebar.html" %}
+
+
+{% block site_title %}個別ページ{% endblock %}
+
+
+{% block extra_head %}
+<script>console.log("追加のcssやjsがあればここにまとめて書く");</script>
+<style>
+    .sort {
+       float: right;
+       margin-right: 30%;
+       font-weight: bold;
+       color: chartreuse;
+    }
+</style>
+{% endblock %}
+
+
+
+{% block page_title %}{% endblock %}
+
+{% block main %}
+     <main class="container">
+
+         {% if video.image %}<div><img src="/media/{{ video.image }}" alt="投稿された画像"></div>{% endif %}
+         {% if video.movie %}<div><video src="/media/{{ video.movie }}" alt="投稿された動画" controls></video></div>{% endif %}
+
+         <div class="border">
+            {# <div>{{ video.id }}</div> #}
+
+            {% if video.edited %}
+               <p class="sort">Edited</p>
+            {% endif %}
+
+            <div>タイトル ：{{ video.title }}</div>
+
+            <div>
+                {% if video.edited %}更新日 ：{{ video.dt }}
+                {% else %}投稿日 ：{{ video.dt }}
+                {% endif %}
+            </div>
+
+            <div>カテゴリ :{{ video.category.name }}</div>
+
+            <div>タグ :{% for tag in video.tag.all %}{{ tag }} {% endfor %}</div>
+
+            <div>{{ video.description }}</div>
+
+            <div>
+              <form action="{% url 'tube:single' video.id %}" method="POST" >
+                {% csrf_token %}
+                <div><textarea class="form-control" name="content" placeholder="コメント...">{{ comment.content }}</textarea></div>
+
+                <button class="btn btn-outline-primary" >投稿</button>
+
+
+              </form>
+              <a class="btn btn-outline-dark" type="reset" href="{% url 'tube:single' video.id %}" >キャンセル</a>
+              <a class="btn btn-outline-success" href="{% url 'tube:index' %}">検索ページへ</a>
+            </div>
+
+            {% if comments %}
+
+                 {% for comment in comments %}
+                   <div class="border">{{ comment.content }}</div>
+                 {% endfor %}
+            {% else %}
+                    <div>コメントはまだありません。</div>
+            {% endif %}
+
+         </div>
+     </main>
+{% endblock %}

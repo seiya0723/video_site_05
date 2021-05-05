@@ -1,0 +1,165 @@
+{% extends "common/sidebar.html" %}
+{% load static %}
+{% load param_change %} {# ←ページネーション用のカスタムテンプレートタグを読み込む #}
+
+
+
+{% block site_title %}サイトのタイトル{% endblock %}
+
+
+{% block extra_head %}
+<script>console.log("追加のcssやjsがあればここにまとめて書く");</script>
+
+{% endblock %}
+
+
+
+{% block page_title %}{% endblock %}
+
+{% block main %}
+<main class="container">
+
+        <form method="GET">
+            <div>OR検索はチェックを入れる:<input type="checkbox" name="option" {% if request.GET.option %}checked{% endif %}></div>
+            <input type="text" name="search" value="{{ request.GET.search }}">
+            <input type="submit" value="検索">
+        </form>
+
+
+        <!--TIPS:ファイルをアップロードする場合、 enctype="multipart/form-data" をformタグに入れる。-->
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div>
+                <select name="category">
+                    {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                {% for tag in tags %}
+                <input id ="{{ tag.id }}" type="checkbox" name="tag" value="{{ tag.id }}"><label for="{{ tag.id }}">{{ tag.name }}</label>
+                {% endfor %}
+            </div>
+
+            <div><input class = "form-text" placeholder="タイトル..." name="title" value="{{ request.POST.title }}"></div>
+
+            <div><textarea class="form-control" name="description" placeholder="概要欄...">{{ video.description }}</textarea></div>
+
+            <div>画像：<input type="file" accept=".jpg,.png" name="image"></div>
+            <div>動画：<input type="file" accept="video/mp4" name="movie"></div>
+
+            <div>
+                <ul>
+                    <li>mp4ファイルのみ対応しています。</li>
+                    <li>ファイルサイズは上限200MBです。</li>
+                 </ul>
+            </div>
+
+            <input class="form-control my-2" type="submit" value="送信">
+
+        </form>
+
+        {% for video in videos %}
+
+           <div class="video_content_list">
+               <div class="video_content">
+                    <a class="video_content_link" href="{% url 'tube:single' video.id %}">
+                        {% if video.image %}<div><img src="/media/{{ video.image }}" alt="投稿された画像"></div>{% endif %}
+                        {% if video.movie %}<div><video src="/media/{{ video.movie }}" alt="投稿された動画" controls></video></div>{% endif %}
+                        <div>タイトル ：{{ video.title }}</div>
+                    </a>
+               </div>
+           </div>
+
+
+           <div class="border">
+
+             {% if video.edited %}
+                <p class="sort">Edited</p>
+             {% endif %}
+
+             <div>
+                 {% if video.edited %}更新日 ：{{ video.dt }}
+                 {% else %}投稿日 ：{{ video.dt }}
+                 {% endif %}
+             </div>
+
+             <div>カテゴリ :{{ video.category.name }}</div>
+
+             <!--TIPS:複数選択されたタグを全て表示させる時はこのようにする。-->
+             <div>タグ :{% for tag in video.tag.all %}{{ tag }} {% endfor %}</div>
+
+             <div>{{ video.description }}</div>
+
+             <div>
+                 <a class="btn btn-outline-info" href="{% url 'tube:single' video.id %}">コメントする</a>
+             </div>
+
+             <a class="btn btn-danger" href="{% url 'tube:delete' video.id %}">削除</a>
+             <a class="btn btn-success" href="{% url 'tube:update' video.id %}">編集</a>
+
+           </div>
+       {% endfor %}
+
+
+        <!-- 検索とページが両立しない場合 ここから -->
+        <ul class="pagination justify-content-center">
+            {% if videos.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ videos.start_index }}">最初のページ</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ videos.previous_page_number }}">前のページ</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link">最初のページ</a></li>
+            <li class="page-item"><a class="page-link">前のページ</a></li>
+            {% endif %}
+            <li class="page-item"><a class="page-link">{{ videos.number }}</a></li>
+            {% if videos.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ videos.next_page_number }}">次のページ</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ videos.end_index }}">最後のページ</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link">次のページ</a></li>
+            <li class="page-item"><a class="page-link">最後のページ</a></li>
+            {% endif %}
+        </ul>
+        <!-- 検索とページが両立しない場合 ここまで -->
+
+
+        <!-- 検索とページが両立する場合 ここから -->
+        <ul class="pagination justify-content-center">
+            {% if videos.has_previous %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' '1' %}">最初のページ</a></li>
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' videos.previous_page_number %}">前のページ</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link">最初のページ</a></li>
+            <li class="page-item"><a class="page-link">前のページ</a></li>
+            {% endif %}
+            <li class="page-item"><a class="page-link">{{ videos.number }}</a></li>
+            {% if videos.has_next %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' videos.next_page_number %}">次のページ</a></li>
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' videos.paginator.num_pages %}">最後のページ</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link">次のページ</a></li>
+            <li class="page-item"><a class="page-link">最後のページ</a></li>
+            {% endif %}
+        </ul>
+        <!-- 検索とページが両立する場合 ここまで -->
+
+
+
+</main>
+{% endblock %}
+
+
+
+
+
+{# ユーザーがログイン済みの場合、userのis_authenticated属性値で判定できる。 #}
+  {#% if user.is_authenticated %#}
+ {# <div>こんにちは{{ user.get_username }}さん</div> #}
+  {#% else %#}
+  {# <div>ログインしてください</div> #}
+  {#% endif %#}
+
+

@@ -1,0 +1,44 @@
+
+/* これで親要素からはみ出してしまうことを防ぐことができる。*/
+img {
+    max-width:100%;
+}
+video {
+    max-width:100%;
+}
+
+
+
+
+
+
+header {
+    background:black;
+    color:white;
+}
+
+/* 動画投稿欄編集済 */
+.sort {
+       float: right;
+       margin-right: 10%;
+       font-weight: bold;
+       color: chartreuse;
+}
+
+
+.video_content_list {
+     display:flex;
+     flex-wrap:wrap;
+}
+
+.video_content {
+     width:calc(100% / 2);
+}
+
+.video_content_link {
+    display:block;
+    margin:0.5rem;
+}
+.video_content_link:hover {
+    text-decoration:underline;
+}
