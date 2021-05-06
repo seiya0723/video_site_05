@@ -108,7 +108,7 @@
         <!-- 検索とページが両立しない場合 ここから -->
         <ul class="pagination justify-content-center">
             {% if videos.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ videos.start_index }}">最初のページ</a></li>
+            <li class="page-item"><a class="page-link" href="?page=1">最初のページ</a></li>
             <li class="page-item"><a class="page-link" href="?page={{ videos.previous_page_number }}">前のページ</a></li>
             {% else %}
             <li class="page-item"><a class="page-link">最初のページ</a></li>
@@ -117,7 +117,7 @@
             <li class="page-item"><a class="page-link">{{ videos.number }}</a></li>
             {% if videos.has_next %}
             <li class="page-item"><a class="page-link" href="?page={{ videos.next_page_number }}">次のページ</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ videos.end_index }}">最後のページ</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ videos.paginator.num_pages }}">最後のページ</a></li>
             {% else %}
             <li class="page-item"><a class="page-link">次のページ</a></li>
             <li class="page-item"><a class="page-link">最後のページ</a></li>
@@ -125,6 +125,8 @@
         </ul>
         <!-- 検索とページが両立しない場合 ここまで -->
 
+
+        {{ request.GET }}
 
         <!-- 検索とページが両立する場合 ここから -->
         <ul class="pagination justify-content-center">

@@ -12,7 +12,7 @@ def url_replace(request, field, value):
 1、リクエストオブジェクト(request)、クエリストリングの名前(page)、ページ番号を引数として関数実行
 2、リクエストをコピー、pageにページ番号を当てる
 3、リクエストのクエリストリングのみを返す(既存のクエリストリングにpageを追加して、全クエリストリングを返却している)
-   例1: ?page=3
-   例2: ?search=hoge&page=2
+   例1: page=3
+   例2: search=hoge&page=2
 """
 

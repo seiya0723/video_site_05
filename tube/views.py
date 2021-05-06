@@ -61,7 +61,7 @@ class IndexView(View):
 
 
         #===========ここからページネーション処理================
-        paginator   = Paginator(videos,3) #←(ページネーション化させたいデータ、ページ数)
+        paginator   = Paginator(videos,3) #←(ページネーション化させたいデータ、1ページに表示させる数)
 
         if "page" in request.GET:
             videos    = paginator.get_page(request.GET["page"])
